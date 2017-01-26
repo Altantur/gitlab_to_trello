@@ -2,14 +2,18 @@ var createHandler = require('./server/gitlab-webhook-handler'),
     Trello = require('node-trello');
 
 const TRELLO_KEY = '606e8e43f53447a2819dd630338306aa'
-const TRELLO_TOKEN = ''
-const WEBHOOK_SECRET = ''
+const WEBHOOK_URL = '/webhook'
 
-var handler = createHandler({ path: WEBHOOK_URL, secret:  WEBHOOK_SECRET})
-var t = new Trello(TRELLO_KEY, TRELLO_TOKEN)
+var handler = null
+var t = null
 
-function initiator(request, response) {
+function setUp(trello, hashsecret) {
+  handler = createHandler({ path: WEBHOOK_URL, secret:  hashsecret})
+  t = new Trello(TRELLO_KEY, trello.token)
+}
+function webhookHandler(request, response) {
   handler(request, response, function(err){
+    if(err) return console.log("Error folks!", err)
   });
 }
 
@@ -18,13 +22,20 @@ handler.on('error', function (err) {
 })
 
 handler.on('issue', function (event) {
-  //   console.log('Received an issue event for %s action=%s: #%d %s',
-  //   event.payload.repository.name,
-  //   event.payload.action,
-  //   event.payload.issue.number,
-  //   event.payload.issue.title)
   console.log(JSON.stringify(event));
 })
 
+process.on('message', (message) => {
+  switch (message.type) {
+    case "webHooked":
+      webhookHandler(message.request, message.response)
+      break;
+    case "setUp":
+      setUp(message.trello)
+      break;
+    default:
+
+  }
+})
 // handler.on('note', function (event) {
 // })
