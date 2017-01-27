@@ -1,4 +1,4 @@
-var createHandler = require('./server/gitlab-webhook-handler'),
+var createHandler = require('./gitlab-webhook-handler'),
     Trello = require('node-trello');
 
 const TRELLO_KEY = '606e8e43f53447a2819dd630338306aa'

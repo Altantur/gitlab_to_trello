@@ -1,3 +1,4 @@
+require('dotenv').config({path: './.env'});
 var path = require('path'),
     express = require('express'),
     fs = require('fs'),
@@ -7,14 +8,13 @@ var path = require('path'),
     app = express(),
     db = levelup('./trellodb');
 
-require('dotenv').config;
 
 const PORT = process.env.PORT || 8080;
 const WEBHOOK_URL = '/webhook'
-const BASE_URL = 'http://localhost:8080'
+const BASE_URL = process.env.BASE_URL + ':' process.env.PORT
 
 var childs = {};
-console.log("Hi there app" + process.env.PORT);
+console.log("Hi there app! Port is :  " + process.env.PORT);
 
 // using webpack-dev-server and middleware in development environment
 if(process.env.NODE_ENV !== 'production') {
