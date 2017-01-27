@@ -11,7 +11,7 @@ var path = require('path'),
 
 const PORT = process.env.PORT || 8080;
 const WEBHOOK_URL = '/webhook'
-const BASE_URL = process.env.BASE_URL + ':' process.env.PORT
+const BASE_URL = process.env.BASE_URL + ':' + process.env.PORT
 
 var childs = {};
 console.log("Hi there app! Port is :  " + process.env.PORT);
