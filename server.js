@@ -6,12 +6,15 @@ var path = require('path'),
     childProcess = require('child_process'),
     app = express(),
     db = levelup('./trellodb');
+
+require('dotenv').config;
+
 const PORT = process.env.PORT || 8080;
 const WEBHOOK_URL = '/webhook'
 const BASE_URL = 'http://localhost:8080'
 
 var childs = {};
-
+console.log("Hi there app" + process.env.PORT);
 
 // using webpack-dev-server and middleware in development environment
 if(process.env.NODE_ENV !== 'production') {

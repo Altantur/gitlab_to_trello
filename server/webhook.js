@@ -11,19 +11,21 @@ function setUp(trello, hashsecret) {
   handler = createHandler({ path: WEBHOOK_URL, secret:  hashsecret})
   t = new Trello(TRELLO_KEY, trello.token)
 }
+
 function webhookHandler(request, response) {
   handler(request, response, function(err){
     if(err) return console.log("Error folks!", err)
   });
+
+  handler.on('error', function (err) {
+    console.error('Error:', err.message)
+  })
+
+  handler.on('issue', function (event) {
+    console.log(JSON.stringify(event));
+  })
+
 }
-
-handler.on('error', function (err) {
-  console.error('Error:', err.message)
-})
-
-handler.on('issue', function (event) {
-  console.log(JSON.stringify(event));
-})
 
 process.on('message', (message) => {
   switch (message.type) {
