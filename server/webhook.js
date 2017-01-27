@@ -13,10 +13,14 @@ function setUp(trello, hashsecret) {
 }
 
 function webhookHandler(request, response) {
+
   handler(request, response, function(err){
     if(err) return console.log("Error folks!", err)
+    console.log("no error so far");
   });
-
+  handler.on('push', function (event) {
+    console.log(JSON.stringify(event));
+  })
   handler.on('error', function (err) {
     console.error('Error:', err.message)
   })
@@ -30,6 +34,7 @@ function webhookHandler(request, response) {
 process.on('message', (message) => {
   switch (message.type) {
     case "webHooked":
+    console.log("webhook called");
       webhookHandler(message.request, message.response)
       break;
     case "setUp":
