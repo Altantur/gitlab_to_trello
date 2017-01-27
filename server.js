@@ -57,7 +57,7 @@ app.post('/setwebhook', function(request, response) {
     response.send(BASE_URL + WEBHOOK_URL + "?hashsecret=" + hashsecret)
 });
 
-app.get(WEBHOOK_URL, function(request, response) {
+app.post(WEBHOOK_URL, function(request, response) {
   var hashsecret = request.query.hashsecret
   var newProcess = true
   if(childs[hashsecret]){
