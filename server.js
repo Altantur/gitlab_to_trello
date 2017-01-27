@@ -58,7 +58,7 @@ app.post('/setwebhook', function(request, response) {
 });
 
 app.post(WEBHOOK_URL, function(request, response) {
-  var hashsecret = request.header["x-gitlab-token"]
+  var hashsecret = request.headers["x-gitlab-token"]
   var newProcess = true
   if(childs[hashsecret]){
     childs[hashsecret].send({
@@ -66,10 +66,10 @@ app.post(WEBHOOK_URL, function(request, response) {
       request: request,
       response: response
     })
+    response.send(hashsecret)
   }else {
     response.send("doesn't know what you want to get here!")
   }
-    response.send(hashsecret)
 });
 
 app.listen(PORT, function(error) {
