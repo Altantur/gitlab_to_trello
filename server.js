@@ -92,17 +92,12 @@ app.post('/trelloCallback', function(request, response) {
           break;
         case "createList":
           var name = action.data.list.name
+          console.log(name);
           gitlabAPI.post(`/projects/${gitlab.projectId}/labels`, {
-            "name" : name
+            "title" : name
           }).then((value) => {
             console.log(value);
           })
-          break;
-        case "commentCard":
-
-          break;
-        case "commentCard":
-
           break;
         default:
       }
