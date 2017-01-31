@@ -40,28 +40,25 @@ app.post('/setwebhook', function(request, response) {
     token : request.body.trelloToken,
     boardId : request.body.boardId
   }
-  var hashsecret = Math.floor(Date.now()/10).toString(16)
-  db.put(hashsecret, trello, function (err) {
-    if(err) return console.log("Error folks!", err)
-    db.get(hashsecret, function (err, value) {
-      if(err) return console.log("Error folks!", err)
-    })
-  })
-    response.send(BASE_URL + WEBHOOK_URL + "?hashsecret=" + hashsecret)
+  var gitlab = {
+    token : request.body.gitlabToken,
+    projectId : request.body.gitlabProjectId
+  }
+  // db.get(hashsecret, function (err, value) {
+  //   // If error occurS!
+  //   if(err) return console.log("Error folks!", err)
+  //
+  // })
+  // db.put(hashsecret, trello, function (err) {
+  //   // If error occurS!
+  //   if(err) return console.log("Error folks!", err)
+  //
+  // })
+    response.send("Succesfully associated!")
 });
 
-app.post(WEBHOOK_URL, function(request, response) {
-  var hashsecret = request.headers["x-gitlab-token"]
-  if(childs[hashsecret]){
-    childs[hashsecret].send({
-      type: "webHooked",
-      request: request,
-      response: response
-    })
-    response.send(hashsecret)
-  }else {
-    response.send("doesn't know what you want to get here!")
-  }
+app.post('/trelloCallback', function(request, response) {
+  console.log(request);
 });
 
 app.listen(PORT, function(error) {
