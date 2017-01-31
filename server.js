@@ -79,13 +79,20 @@ app.post('/trelloCallback', function(request, response) {
         case "createCard":
           gitlabAPI.post(`/projects/${gitlab.projectId}/issues`, {
             "title" : action.data.card.name
-          }).then((value) => {
-            console.log(value);
+          }).then((response) => {
+            console.log(response);
+            var issues = board.data.issues ? board.data.issues : []
+            issues.push({cardIdShort: action.data.card.idShort, issueId: response.data.iid})
+            board.data.issues = issues
           })
           console.log(action.data);
           break;
         case "updateCard":
-
+          gitlabAPI.put(`/projects/${gitlab.projectId}/issues`, {
+            "title" : action.data.card.name
+          }).then((value) => {
+            console.log(value);
+          })
           console.log(action.data);
           break;
         case "addLabelToCard":
