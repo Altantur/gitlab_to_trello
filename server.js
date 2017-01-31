@@ -59,10 +59,12 @@ app.post('/setwebhook', function(request, response) {
 
 app.post('/trelloCallback', function(request, response) {
   console.log(request);
+  res.sendStatus(200)
 });
 
 app.get('/trelloCallback', function(request, response) {
   console.log(request);
+  res.sendStatus(200)
 });
 
 app.listen(PORT, function(error) {
