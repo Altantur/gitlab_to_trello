@@ -61,6 +61,10 @@ app.post('/trelloCallback', function(request, response) {
   console.log(request);
 });
 
+app.get('/trelloCallback', function(request, response) {
+  console.log(request);
+});
+
 app.listen(PORT, function(error) {
   if (error) {
     console.error(error);
