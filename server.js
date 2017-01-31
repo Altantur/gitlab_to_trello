@@ -45,13 +45,6 @@ app.post('/setwebhook', function(request, response) {
     if(err) return console.log("Error folks!", err)
     db.get(hashsecret, function (err, value) {
       if(err) return console.log("Error folks!", err)
-      var child = childProcess.fork('./server/webhook')
-      child.send({
-        type: "setUp",
-        trello: trello,
-        hashsecret: hashsecret
-      })
-      childs[hashsecret] = child
     })
   })
     response.send(BASE_URL + WEBHOOK_URL + "?hashsecret=" + hashsecret)
@@ -59,7 +52,6 @@ app.post('/setwebhook', function(request, response) {
 
 app.post(WEBHOOK_URL, function(request, response) {
   var hashsecret = request.headers["x-gitlab-token"]
-  var newProcess = true
   if(childs[hashsecret]){
     childs[hashsecret].send({
       type: "webHooked",

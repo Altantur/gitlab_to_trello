@@ -34,7 +34,7 @@ function webhookHandler(request, response) {
 process.on('message', (message) => {
   switch (message.type) {
     case "webHooked":
-    console.log("webhook called");
+      console.log("webhook called");
       webhookHandler(message.request, message.response)
       break;
     case "setUp":
