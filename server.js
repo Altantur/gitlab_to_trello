@@ -5,6 +5,7 @@ var path = require('path'),
     bodyParser = require('body-parser'),
     levelup = require('levelup'),
     childProcess = require('child_process'),
+    axios = require('axios'),
     app = express(),
     db = levelup('./trellodb');
 
@@ -12,9 +13,6 @@ var path = require('path'),
 const PORT = process.env.PORT || 8080;
 const WEBHOOK_URL = '/webhook'
 const BASE_URL = process.env.BASE_URL + ':' + process.env.PORT
-
-var childs = {};
-console.log("Hi there app! Port is :  " + process.env.PORT);
 
 // using webpack-dev-server and middleware in development environment
 if(process.env.NODE_ENV !== 'production') {
@@ -44,16 +42,17 @@ app.post('/setwebhook', function(request, response) {
     token : request.body.gitlabToken,
     projectId : request.body.gitlabProjectId
   }
-  // db.get(hashsecret, function (err, value) {
-  //   // If error occurS!
-  //   if(err) return console.log("Error folks!", err)
-  //
-  // })
-  // db.put(hashsecret, trello, function (err) {
-  //   // If error occurS!
-  //   if(err) return console.log("Error folks!", err)
-  //
-  // })
+  db.get(trello.boardId, function (err, value) {
+    // If error occurS!
+    if(err){
+      db.put(trello.boardId, {trello: trello, gitlab: gitlab}, function (err) {
+        // If error occurS!
+        if(err) return console.log("Error folks!", err)
+
+      })
+      return console.log("Error folks!", err)
+    }
+  })
     response.send("Succesfully associated!")
 });
 
@@ -63,7 +62,55 @@ app.post('/trelloCallback', function(request, response) {
 });
 
 app.get('/trelloCallback', function(request, response) {
-  console.log(request.body);
+  var boardId = request.body.model.id
+  var type = request.body.action.type
+  var action = request.body.action
+  var gitlab = null
+  db.get(boardId, function (err, value) {
+    if(err) return console.log("something went wrong!")
+    gitlab = value.gitlab
+    let gitlabAPI = axios.create({
+        baseURL: 'http://gitlab.unimedia.mn/api/v3',
+        headers: {
+            'PRIVATE-TOKEN': gitlab.token
+        }
+    })
+
+    switch (type) {
+      case "addChecklistToCard":
+
+        break;
+      case "createCard":
+
+        break;
+      case "updateCard":
+
+        break;
+      case "addLabelToCard":
+
+        break;
+      case "removeLabelFromCard":
+
+        break;
+      case "commentCard":
+
+        break;
+      case "createList":
+        let name = action.data.list.name
+        gitlabAPI.post(`/projects/${gitlab.projectId}/labels`, {
+          "name" : name
+        })
+        break;
+      case "commentCard":
+
+        break;
+      case "commentCard":
+
+        break;
+      default:
+
+    }
+  })
   response.sendStatus(200)
 });
 
