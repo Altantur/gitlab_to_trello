@@ -74,21 +74,26 @@ app.post('/trelloCallback', function(request, response) {
     switch (type) {
         case "addChecklistToCard":
 
+          console.log(action.data);
           break;
         case "createCard":
 
+          console.log(action.data);
           break;
         case "updateCard":
 
+          console.log(action.data);
           break;
         case "addLabelToCard":
 
+          console.log(action.data);
           break;
         case "removeLabelFromCard":
 
+          console.log(action.data);
           break;
         case "commentCard":
-
+          console.log(action.data);
           break;
         case "createList":
           var name = action.data.list.name
