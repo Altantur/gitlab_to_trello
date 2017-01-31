@@ -61,7 +61,7 @@ app.post('/trelloCallback', function(request, response) {
   var type = request.body.action.type
   var action = request.body.action
   var gitlab = null
-  var board = boards.find(request.body.model.id)
+  var board = boards.find({id: request.body.model.id})
   gitlab = board.gitlab
   var gitlabAPI = axios.create({
       baseURL: 'http://gitlab.unimedia.mn/api/v3',
