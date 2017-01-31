@@ -47,61 +47,58 @@ app.post('/setwebhook', function(request, response) {
     token : request.body.gitlabToken,
     projectId : request.body.gitlabProjectId
   }
-  {trello: trello, }
-  boards.find({trello: trello})
+  var board = boards.find({id: trello.boardId}).value()
+  if(!board) boards.push({id: trello.boardId, data: {trello: trello, gitlab: gitlab}})
   response.send("Succesfully associated!")
 });
 
 app.post('/trelloCallback', function(request, response) {
-  var boardId = request.body.model.id
   var type = request.body.action.type
   var action = request.body.action
   var gitlab = null
-  // db.get(boardId, function (err, value) {
-  //   if(err) return console.log("something went wrong!")
-  //   gitlab = value.gitlab
-  //   var gitlabAPI = axios.create({
-  //       baseURL: 'http://gitlab.unimedia.mn/api/v3',
-  //       headers: {
-  //           'PRIVATE-TOKEN': gitlab.token
-  //       }
-  //   })
-  //   switch (type) {
-  //     case "addChecklistToCard":
-  //
-  //       break;
-  //     case "createCard":
-  //
-  //       break;
-  //     case "updateCard":
-  //
-  //       break;
-  //     case "addLabelToCard":
-  //
-  //       break;
-  //     case "removeLabelFromCard":
-  //
-  //       break;
-  //     case "commentCard":
-  //
-  //       break;
-  //     case "createList":
-  //       var name = action.data.list.name
-  //       gitlabAPI.post(`/projects/${gitlab.projectId}/labels`, {
-  //         "name" : name
-  //       }).then((value) => {
-  //         console.log(value);
-  //       })
-  //       break;
-  //     case "commentCard":
-  //
-  //       break;
-  //     case "commentCard":
-  //
-  //       break;
-  //     default:
-  //   }
-  // })
+  var board = boards.find(request.body.model.id)
+  gitlab = board.gitlab
+  var gitlabAPI = axios.create({
+      baseURL: 'http://gitlab.unimedia.mn/api/v3',
+      headers: {
+          'PRIVATE-TOKEN': gitlab.token
+      }
+  })
+  switch (type) {
+      case "addChecklistToCard":
+
+        break;
+      case "createCard":
+
+        break;
+      case "updateCard":
+
+        break;
+      case "addLabelToCard":
+
+        break;
+      case "removeLabelFromCard":
+
+        break;
+      case "commentCard":
+
+        break;
+      case "createList":
+        var name = action.data.list.name
+        gitlabAPI.post(`/projects/${gitlab.projectId}/labels`, {
+          "name" : name
+        }).then((value) => {
+          console.log(value);
+        })
+        break;
+      case "commentCard":
+
+        break;
+      case "commentCard":
+
+        break;
+      default:
+    }
   response.sendStatus(200)
 });
 
