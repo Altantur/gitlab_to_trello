@@ -3,16 +3,22 @@ var path = require('path'),
     express = require('express'),
     fs = require('fs'),
     bodyParser = require('body-parser'),
-    levelup = require('levelup'),
+    low = require('lowdb'),
+    fileAsync = require('lowdb/lib/file-async'),
     childProcess = require('child_process'),
     axios = require('axios'),
-    app = express(),
-    db = levelup('./trellodb');
+    db = low('db.json', {
+      storage: fileAsync
+    }),
+    app = express();
 
 
 const PORT = process.env.PORT || 8080;
 const WEBHOOK_URL = '/webhook'
 const BASE_URL = process.env.BASE_URL + ':' + process.env.PORT
+
+db.defaults({ boards: [] }).value()
+const boards = db.get('boards')
 
 // using webpack-dev-server and middleware in development environment
 if(process.env.NODE_ENV !== 'production') {
@@ -32,7 +38,6 @@ app.use(bodyParser.json());
 app.get('/', function(request, response) {
   response.sendFile(__dirname + '/dist/index.html')
 });
-
 app.post('/setwebhook', function(request, response) {
   var trello = {
     token : request.body.trelloToken,
@@ -42,18 +47,9 @@ app.post('/setwebhook', function(request, response) {
     token : request.body.gitlabToken,
     projectId : request.body.gitlabProjectId
   }
-  db.get(trello.boardId, function (err, value) {
-    // If error occurS!
-    if(err){
-      db.put(trello.boardId, {trello: trello, gitlab: gitlab}, function (err) {
-        // If error occurS!
-        if(err) return console.log("Error folks!", err)
-
-      })
-      return console.log("Error folks!", err)
-    }
-  })
-    response.send("Succesfully associated!")
+  {trello: trello, }
+  boards.find({trello: trello})
+  response.send("Succesfully associated!")
 });
 
 app.post('/trelloCallback', function(request, response) {
@@ -61,51 +57,51 @@ app.post('/trelloCallback', function(request, response) {
   var type = request.body.action.type
   var action = request.body.action
   var gitlab = null
-  db.get(boardId, function (err, value) {
-    if(err) return console.log("something went wrong!")
-    gitlab = value.gitlab
-    let gitlabAPI = axios.create({
-        baseURL: 'http://gitlab.unimedia.mn/api/v3',
-        headers: {
-            'PRIVATE-TOKEN': gitlab.token
-        }
-    })
-    switch (type) {
-      case "addChecklistToCard":
-
-        break;
-      case "createCard":
-
-        break;
-      case "updateCard":
-
-        break;
-      case "addLabelToCard":
-
-        break;
-      case "removeLabelFromCard":
-
-        break;
-      case "commentCard":
-
-        break;
-      case "createList":
-        let name = action.data.list.name
-        gitlabAPI.post(`/projects/${gitlab.projectId}/labels`, {
-          "name" : name
-        }).then((value) => {
-          console.log(value);
-        })
-        break;
-      case "commentCard":
-
-        break;
-      case "commentCard":
-
-        break;
-      default:
-    }
-  })
+  // db.get(boardId, function (err, value) {
+  //   if(err) return console.log("something went wrong!")
+  //   gitlab = value.gitlab
+  //   var gitlabAPI = axios.create({
+  //       baseURL: 'http://gitlab.unimedia.mn/api/v3',
+  //       headers: {
+  //           'PRIVATE-TOKEN': gitlab.token
+  //       }
+  //   })
+  //   switch (type) {
+  //     case "addChecklistToCard":
+  //
+  //       break;
+  //     case "createCard":
+  //
+  //       break;
+  //     case "updateCard":
+  //
+  //       break;
+  //     case "addLabelToCard":
+  //
+  //       break;
+  //     case "removeLabelFromCard":
+  //
+  //       break;
+  //     case "commentCard":
+  //
+  //       break;
+  //     case "createList":
+  //       var name = action.data.list.name
+  //       gitlabAPI.post(`/projects/${gitlab.projectId}/labels`, {
+  //         "name" : name
+  //       }).then((value) => {
+  //         console.log(value);
+  //       })
+  //       break;
+  //     case "commentCard":
+  //
+  //       break;
+  //     case "commentCard":
+  //
+  //       break;
+  //     default:
+  //   }
+  // })
   response.sendStatus(200)
 });
 
