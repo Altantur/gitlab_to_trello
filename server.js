@@ -48,7 +48,12 @@ app.post('/setwebhook', function(request, response) {
     projectId : request.body.gitlabProjectId
   }
   var board = boards.find({id: trello.boardId}).value()
-  if(!board) boards.push({id: trello.boardId, data: {trello: trello, gitlab: gitlab}})
+
+  if(!board){
+    board = {id: trello.boardId, data: {trello: trello, gitlab: gitlab}}
+    console.log(board);
+    boards.push(board)
+  }
   response.send("Succesfully associated!")
 });
 
