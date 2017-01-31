@@ -77,7 +77,11 @@ app.post('/trelloCallback', function(request, response) {
           console.log(action.data);
           break;
         case "createCard":
-
+          gitlabAPI.post(`/projects/${gitlab.projectId}/issues`, {
+            "title" : action.data.card.name
+          }).then((value) => {
+            console.log(value);
+          })
           console.log(action.data);
           break;
         case "updateCard":
