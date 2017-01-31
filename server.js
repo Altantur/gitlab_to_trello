@@ -90,8 +90,8 @@ app.post('/trelloCallback', function(request, response) {
           break;
         case "updateCard":
           var issueNo = null
-          for (var i = 0; i < board.issues.length; i++) {
-            if(board.issues[i].cardIdShort === action.data.card.idShort)  issueNo = board.issues[i].issueId
+          for (var i = 0; i < board.data.issues.length; i++) {
+            if(board.data.issues[i].cardIdShort === action.data.card.idShort)  issueNo = board.data.issues[i].issueId
           }
           gitlabAPI.put(`/projects/${gitlab.projectId}/issues/${issueNo}`, {
             "title" : action.data.card.name
