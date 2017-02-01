@@ -105,10 +105,10 @@ app.post('/trelloCallback', function(request, response) {
           break;
         case "addLabelToCard":
           console.log("Triggered by : addLabelToCard");
-          var dics = ["gitlab", "issue", "git", "bug"]
+          var triggerWords = ["gitlab", "issue", "git", "bug"]
           var isIssue = false
-          for (var i = 0; i < dics.length; i++) {
-            isIssue = action.data.text.includes(dics[i])
+          for (var i = 0; i < triggerWords.length; i++) {
+            isIssue = action.data.text.includes(triggerWords[i])
           }
           if (isIssue) {
             var isAlreadyIssue = false
