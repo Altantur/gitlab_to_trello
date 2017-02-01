@@ -7,11 +7,11 @@ var path = require('path'),
     fileAsync = require('lowdb/lib/file-async'),
     childProcess = require('child_process'),
     axios = require('axios'),
+    Trello = require('node-trello'),
     db = low('db.json', {
       storage: fileAsync
     }),
     app = express();
-
 
 const PORT = process.env.PORT || 8080;
 const WEBHOOK_URL = '/webhook'
@@ -71,9 +71,9 @@ app.post('/trelloCallback', function(request, response) {
             'PRIVATE-TOKEN': gitlab.token
         }
     })
+    var t = new Trello("606e8e43f53447a2819dd630338306aa", board.data.trello.token)
     switch (type) {
         case "addChecklistToCard":
-
           console.log(action.data);
           break;
         case "createCard":
@@ -82,7 +82,7 @@ app.post('/trelloCallback', function(request, response) {
           }).then((response) => {
             console.log(response);
             var issues = board.data.issues ? board.data.issues : []
-            issues.push({cardIdShort: action.data.card.idShort, issueId: response.data.iid})
+            issues.push({cardId: action.data.card.id, issueId: response.data.iid})
             board.data.issues = issues
             db.write()
           })
@@ -90,18 +90,44 @@ app.post('/trelloCallback', function(request, response) {
           break;
         case "updateCard":
           for (var i = 0; i < board.data.issues.length; i++) {
-            if(board.data.issues[i].cardIdShort === action.data.card.idShort) {
+            if(board.data.issues[i].cardId === action.data.card.id) {
               gitlabAPI.put(`/projects/${gitlab.projectId}/issues/${board.data.issues[i].issueId}`, {
                 "title" : action.data.card.name
               }).then((value) => {
-                console.log(value);
+                console.log(value.data);
               })
             }
           }
           console.log(action.data);
           break;
         case "addLabelToCard":
-
+          var dics = ["gitlab", "issue", "git", "bug"]
+          var isIssue = false
+          for (var i = 0; i < dics.length; i++) {
+            isIssue = action.data.text.includes(dics[i])
+          }
+          if (isIssue) {
+            var isAlreadyIssue = false
+            for (var i = 0; i < board.data.issues.length; i++) {
+              isAlreadyIssue = board.data.issues[i].cardId === action.data.card.id
+            }
+            if (!isAlreadyIssue) {
+                t.get(`/1/cards/${action.data.card.id}`, function (err, data) {
+                  if(err) throw err
+                  gitlabAPI.post(`/projects/${gitlab.projectId}/issues`, {
+                    "title" : data.name,
+                    "description" : data.desc,
+                    "due_date" : data.due
+                  }).then((response) => {
+                    console.log(response);
+                    var issues = board.data.issues ? board.data.issues : []
+                    issues.push({cardId: action.data.card.id, issueId: response.data.iid})
+                    board.data.issues = issues
+                    db.write()
+                  })
+                })
+            }
+          }
           console.log(action.data);
           break;
         case "removeLabelFromCard":
