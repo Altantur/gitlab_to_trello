@@ -108,7 +108,9 @@ app.post('/trelloCallback', function(request, response) {
           var triggerWords = ["gitlab", "issue", "git", "bug"]
           var isIssue = false
           for (var i = 0; i < triggerWords.length; i++) {
-            isIssue = action.data.text.includes(triggerWords[i]) ? true : false
+            if(action.data.text.includes(triggerWords[i]) ){
+              isIssue = true
+            }
           }
           if (isIssue) {
             var isAlreadyIssue = false
