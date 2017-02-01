@@ -74,9 +74,11 @@ app.post('/trelloCallback', function(request, response) {
     var t = new Trello("606e8e43f53447a2819dd630338306aa", board.data.trello.token)
     switch (type) {
         case "addChecklistToCard":
+          console.log("Triggered by : addChecklistToCard");
           console.log(action.data);
           break;
         case "createCard":
+          console.log("Triggered by : createCard");
           gitlabAPI.post(`/projects/${gitlab.projectId}/issues`, {
             "title" : action.data.card.name
           }).then((response) => {
@@ -89,6 +91,7 @@ app.post('/trelloCallback', function(request, response) {
           console.log(action.data);
           break;
         case "updateCard":
+          console.log("Triggered by : updateCard");
           for (var i = 0; i < board.data.issues.length; i++) {
             if(board.data.issues[i].cardId === action.data.card.id) {
               gitlabAPI.put(`/projects/${gitlab.projectId}/issues/${board.data.issues[i].issueId}`, {
@@ -101,6 +104,7 @@ app.post('/trelloCallback', function(request, response) {
           console.log(action.data);
           break;
         case "addLabelToCard":
+          console.log("Triggered by : addLabelToCard");
           var dics = ["gitlab", "issue", "git", "bug"]
           var isIssue = false
           for (var i = 0; i < dics.length; i++) {
@@ -131,13 +135,15 @@ app.post('/trelloCallback', function(request, response) {
           console.log(action.data);
           break;
         case "removeLabelFromCard":
-
+          console.log("Triggered by : removeLabelFromCard");
           console.log(action.data);
           break;
         case "commentCard":
+          console.log("Triggered by : commentCard");
           console.log(action.data);
           break;
         case "createList":
+          console.log("Triggered by : createList");
           var name = action.data.list.name
           console.log(name);
           gitlabAPI.post(`/projects/${gitlab.projectId}/labels`, {
